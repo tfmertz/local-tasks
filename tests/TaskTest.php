@@ -7,7 +7,7 @@
 
 
     require_once 'src/Task.php';
-    require_once 'setup.config';
+    require 'setup.config';
 
     $DB = new PDO('pgsql:host=localhost;dbname=to_do_test', $DB_USER, $DB_PASS);
 
@@ -113,3 +113,5 @@
             $this->assertEquals($test_Task, $result);
         }
     }
+
+?>
