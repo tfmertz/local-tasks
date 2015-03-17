@@ -31,13 +31,15 @@ class Task
         $this->id = (int) $new_id;
     }
 
-    function save() {
+    function save()
+    {
         $statement = $GLOBALS['DB']->query("INSERT INTO tasks (description) VALUES ('{$this->getDescription()}') RETURNING id;");
         $result = $statement->fetch(PDO::FETCH_ASSOC);
         $this->setId($result['id']);
     }
 
-    static function getAll() {
+    static function getAll()
+    {
         $returned_tasks = $GLOBALS['DB']->query("SELECT * FROM tasks;");
         $tasks = array();
 
@@ -51,7 +53,23 @@ class Task
         return $tasks;
     }
 
-    static function deleteAll() {
+    static function deleteAll()
+    {
         $GLOBALS['DB']->exec("DELETE FROM tasks *;");
+    }
+
+    static function find($search_id)
+    {
+        $found_task = null;
+        $tasks = Task::getAll();
+
+        foreach($tasks as $task)
+        {
+            $task_id = $task->getId();
+            if($task_id == $search_id) {
+                $found_task = $task;
+            }
+        }
+        return $found_task;
     }
 }
