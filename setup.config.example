@@ -1,0 +1,8 @@
+<?php
+
+    //once you download the repository, change this file name to
+    //setup.config and add your own pgsql user & password to this file
+    //it has been ignored from commits in .gitignore
+
+    $DB_USER = "<enter your DB user here>";
+    $DB_PASS = "<enter your DB password here>";
