@@ -28,7 +28,7 @@ class Task
 
     function setId($new_id)
     {
-        $this->id = $new_id;
+        $this->id = (int) $new_id;
     }
 
     function save() {
