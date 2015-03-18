@@ -30,6 +30,20 @@
             $this->id = (int) $new_id;
         }
 
+        function getTasks()
+        {
+            $tasks = array();
+            $returned_tasks = $GLOBALS['DB']->query("SELECT * FROM tasks WHERE category_id = {$this->getId()};");
+            foreach($returned_tasks as $task) {
+                $desc = $task['description'];
+                $id = $task['id'];
+                $category_id = $task['category_id'];
+                $new_Task = new Task($desc, $id, $category_id);
+                array_push($tasks, $new_Task);
+            }
+            return $tasks;
+        }
+
         function save()
         {
             $statement = $GLOBALS['DB']->query("INSERT INTO categories (name) VALUES ('{$this->getName()}') RETURNING id;");
