@@ -6,39 +6,44 @@
     */
 
     require_once "src/Category.php";
-    require "setup.config";
-
-    $DB = new PDO('pgsql:host=localhost;dbname=to_do_test', $DB_USER, $DB_PASS);
-
 
     class CategoryTest extends PHPUnit_Framework_TestCase
     {
 
         protected function tearDown()
         {
-          Category::deleteAll();
+            Category::deleteAll();
         }
 
         function test_getName()
         {
             //Arrange
-            $name = "Work stuff";
-            $id = null;
-            $test_Category = new Category($name, $id);
+            $test_Category = new Category("Home");
 
             //Act
             $result = $test_Category->getName();
 
             //Assert
-            $this->assertEquals($name, $result);
+            $this->assertEquals("Home", $result);
+        }
+
+        function test_setName()
+        {
+            //arrange
+            $test_Category = new Category("H");
+
+            //act
+            $test_Category->setName("Home");
+            $result = $test_Category->getName();
+
+            //assert
+            $this->assertEquals("Home", $result);
         }
 
         function test_getId()
         {
             //Arrange
-            $name = "Work stuff";
-            $id = 1;
-            $test_Category = new Category($name, $id);
+            $test_Category = new Category("Other", 1);
 
             //Act
             $result = $test_Category->getId();
@@ -50,9 +55,7 @@
         function test_setId()
         {
             //Arrange
-            $name = "Home stuff";
-            $id = null;
-            $test_Category = new Category($name, $id);
+            $test_Category = new Category("Work", 1);
 
             //Act
             $test_Category->setId(2);
@@ -65,9 +68,7 @@
         function test_save()
         {
             //Arrange
-            $name = "Work stuff";
-            $id = null;
-            $test_Category = new Category($name, $id);
+            $test_Category = new Category("Garden");
             $test_Category->save();
 
             //Act
@@ -77,16 +78,25 @@
             $this->assertEquals($test_Category, $result[0]);
         }
 
+        function test_saveGetsId()
+        {
+            //arrange
+            $test_Category = new Category("Work");
+            $test_Category->save();
+
+            //act
+            $result = $test_Category->getId();
+
+            //assert
+            $this->assertEquals(true, is_numeric($result));
+        }
+
         function test_getAll()
         {
             //Arrange
-            $name = "Work stuff";
-            $id = null;
-            $name2 = "Home stuff";
-            $id2 = null;
-            $test_Category = new Category($name, $id);
+            $test_Category = new Category("Home");
             $test_Category->save();
-            $test_Category2 = new Category($name2, $id2);
+            $test_Category2 = new Category("Work");
             $test_Category2->save();
 
             //Act
@@ -99,13 +109,9 @@
         function test_deleteAll()
         {
             //Arrange
-            $name = "Wash the dog";
-            $id = null;
-            $name2 = "Home stuff";
-            $id2 = null;
-            $test_Category = new Category($name, $id);
+            $test_Category = new Category("Home");
             $test_Category->save();
-            $test_Category2 = new Category($name2, $id2);
+            $test_Category2 = new Category("Work");
             $test_Category2->save();
 
             //Act
@@ -119,13 +125,9 @@
         function test_find()
         {
             //Arrange
-            $name = "Wash the dog";
-            $id = 1;
-            $name2 = "Home stuff";
-            $id2 = 2;
-            $test_Category = new Category($name, $id);
+            $test_Category = new Category("Garden");
             $test_Category->save();
-            $test_Category2 = new Category($name2, $id2);
+            $test_Category2 = new Category("Kitchen");
             $test_Category2->save();
 
             //Act
@@ -135,29 +137,65 @@
             $this->assertEquals($test_Category, $result);
         }
 
-        function test_getTasks()
+        function test_update()
+        {
+            //arrange
+            $test_Category = new Category("Garden");
+            $test_Category->save();
+
+            //act
+            $test_Category->update("Home");
+            $result = $test_Category->getName();
+
+            //assert
+            $this->assertEquals("Home", $result);
+        }
+
+        function test_updateDatabase()
+        {
+            //arrange
+            $test_Category = new Category("Garden");
+            $test_Category->save();
+
+            //act
+            $test_Category->update("Home");
+            $result = Category::getAll();
+
+            //assert
+            $this->assertEquals("Home", $result[0]->getName());
+        }
+
+        function test_delete()
         {
             //Arrange
-            $name = "Work stuff";
-            $id = null;
-            $test_category = new Category($name, $id);
-            $test_category->save();
+            $test_Category = new Category("Garden");
+            $test_Category->save();
+            $test_Category2 = new Category("Kitchen");
+            $test_Category2->save();
 
-            $test_category_id = $test_category->getId();
+            //act
+            $test_Category2->delete();
+            $result = Category::getAll();
 
-            $description = "Email client";
-            $test_task = new Task($description, $id, $test_category_id);
+            //assert
+            $this->assertEquals([$test_Category], $result);
+
+        }
+
+        function test_addTask()
+        {
+            //arrange
+            $test_Category = new Category("Garden");
+            $test_Category->save();
+
+            $test_task = new Task("Weed the beds");
             $test_task->save();
 
-            $description2 = "Meet with boss";
-            $test_task2 = new Task($description2, $id, $test_category_id);
-            $test_task2->save();
+            //act
+            $test_Category->addTask($test_task);
 
-            //Act
-            $result = $test_category->getTasks();
-
-            //Assert
-            $this->assertEquals([$test_task, $test_task2], $result);
+            //assert
+            $this->assertEquals($test_Category->tasks(), [$test_task]);
         }
     }
 

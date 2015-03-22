@@ -2,14 +2,12 @@
     class Task
     {
         private $description;
-        private $category_id;
         private $id;
 
-        function __construct($description, $id = null, $category_id)
+        function __construct($description, $id = null)
         {
             $this->description = $description;
             $this->id = $id;
-            $this->category_id = $category_id;
         }
 
         function setDescription($new_description)
@@ -32,19 +30,9 @@
             $this->id = (int) $new_id;
         }
 
-        function setCategoryId($new_category_id)
-        {
-            $this->category_id = (int) $new_category_id;
-        }
-
-        function getCategoryId()
-        {
-            return $this->category_id;
-        }
-
         function save()
         {
-            $statement = $GLOBALS['DB']->query("INSERT INTO tasks (description, category_id) VALUES ('{$this->getDescription()}', {$this->getCategoryId()}) RETURNING id;");
+            $statement = $GLOBALS['DB']->query("INSERT INTO tasks (task) VALUES ('{$this->getDescription()}') RETURNING id;");
             $result = $statement->fetch(PDO::FETCH_ASSOC);
             $this->setId($result['id']);
         }
@@ -54,10 +42,9 @@
             $returned_tasks = $GLOBALS['DB']->query("SELECT * FROM tasks;");
             $tasks = array();
             foreach($returned_tasks as $task) {
-                $description = $task['description'];
+                $description = $task['task'];
                 $id = $task['id'];
-                $category_id = $task['category_id'];
-                $new_task = new Task($description, $id, $category_id);
+                $new_task = new Task($description, $id);
                 array_push($tasks, $new_task);
             }
             return $tasks;
@@ -70,13 +57,14 @@
 
         static function find($search_id)
         {
+            //grab row out of db
+            $rows = $GLOBALS['DB']->query("SELECT * FROM tasks WHERE id = {$search_id};");
             $found_task = null;
-            $tasks = Task::getAll();
-            foreach($tasks as $task) {
-                $task_id = $task->getId();
-                if ($task_id == $search_id) {
-                  $found_task = $task;
-                }
+            foreach($rows as $row) {
+                $id = $row['id'];
+                $desc = $row['task'];
+                $new_task = new Task($desc, $id);
+                $found_task = $new_task;
             }
             return $found_task;
         }

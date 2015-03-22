@@ -1,12 +1,11 @@
 <?php
 
     /**
-    * @backupGlobals disabled
-    * @backupStaticAttributes disabled
+        @backupGlobals disabled
+        @backupStaticAttributes disabled
     */
 
     require_once "src/Task.php";
-    require_once "src/Category.php";
     require "setup.config";
 
     $DB = new PDO('pgsql:host=localhost;dbname=to_do_test', $DB_USER, $DB_PASS);
@@ -23,14 +22,7 @@
         function test_getId()
         {
             //Arrange
-            $name = "Home stuff";
-            $id = null;
-            $test_category = new Category($name, $id);
-            $test_category->save();
-
-            $description = "Wash the dog";
-            $category_id = $test_category->getId();
-            $test_task = new Task($description, $id, $category_id);
+            $test_task = new Task("Wash the dog", 1);
             $test_task->save();
 
             //Act
@@ -40,37 +32,10 @@
             $this->assertEquals(true, is_numeric($result));
         }
 
-        function test_getCategoryId()
-        {
-            //Arrange
-            $name = "Home stuff";
-            $id = null;
-            $test_category = new Category($name, $id);
-            $test_category->save();
-
-            $description = "Wash the dog";
-            $category_id = $test_category->getId();
-            $test_task = new Task($description, $id, $category_id);
-            $test_task->save();
-
-            //Act
-            $result = $test_task->getCategoryId();
-
-            //Assert
-            $this->assertEquals(true, is_numeric($result));
-        }
-
         function test_setId()
         {
-            //Arrange
-            $name = "Home stuff";
-            $id = null;
-            $test_category = new Category($name, $id);
-            $test_category->save();
-
-            $description = "Wash the dog";
-            $category_id = $test_category->getId();
-            $test_task = new Task($description, $id, $category_id);
+            //arrange
+            $test_task = new Task("Water the lawn", 1);
             $test_task->save();
 
             //Act
@@ -84,14 +49,7 @@
         function test_save()
         {
             //Arrange
-            $name = "Home stuff";
-            $id = null;
-            $test_category = new Category($name, $id);
-            $test_category->save();
-
-            $description = "Wash the dog";
-            $category_id = $test_category->getId();
-            $test_task = new Task($description, $id, $category_id);
+            $test_task = new Task("Wash the dog", 1);
 
             //Act
             $test_task->save();
@@ -101,22 +59,25 @@
             $this->assertEquals($test_task, $result[0]);
         }
 
+        function test_saveSetsId()
+        {
+            //arrange
+            $test_task = new Task("Do the Dishes", null);
+
+            //act
+            $test_task->save();
+
+            //assert
+            $result = Task::getAll();
+            $this->assertEquals(true, is_numeric($test_task->getId()));
+        }
+
         function test_getAll()
         {
             //Arrange
-            $name = "Home stuff";
-            $id = null;
-            $test_category = new Category($name, $id);
-            $test_category->save();
-
-            $description = "Wash the dog";
-            $category_id = $test_category->getId();
-            $test_task = new Task($description, $id, $category_id);
+            $test_task = new Task("Wash the dog");
             $test_task->save();
-
-
-            $description2 = "Water the lawn";
-            $test_task2 = new Task($description2, $id, $category_id);
+            $test_task2 = new Task("Water the lawn");
             $test_task2->save();
 
             //Act
@@ -129,18 +90,9 @@
         function test_deleteAll()
         {
             //Arrange
-            $name = "Home stuff";
-            $id = null;
-            $test_category = new Category($name, $id);
-            $test_category->save();
-
-            $description = "Wash the dog";
-            $category_id = $test_category->getId();
-            $test_task = new Task($description, $id, $category_id);
+            $test_task = new Task("Water the lawn");
             $test_task->save();
-
-            $description2 = "Water the lawn";
-            $test_task2 = new Task($description2, $id, $category_id);
+            $test_task2 = new Task("Feed the dog");
             $test_task2->save();
 
             //Act
@@ -154,18 +106,9 @@
         function test_find()
         {
             //Arrange
-            $name = "Home stuff";
-            $id = null;
-            $test_category = new Category($name, $id);
-            $test_category->save();
-
-            $description = "Wash the dog";
-            $category_id = $test_category->getId();
-            $test_task = new Task($description, $id, $category_id);
+            $test_task = new Task("Feed the kids");
             $test_task->save();
-
-            $description2 = "Water the lawn";
-            $test_task2 = new Task($description2, $id, $category_id);
+            $test_task2 = new Task("Water the lawn");
             $test_task2->save();
 
             //Act
@@ -174,6 +117,5 @@
             //Assert
             $this->assertEquals($test_task, $result);
         }
-
     }
 ?>
