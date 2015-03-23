@@ -34,5 +34,12 @@
         return $app['twig']->render('tasks.twig', array('task_array' => Task::getAll()));
     });
 
+    $app->get("/tasks/{id}", function($id) use ($app) {
+
+        $new_task = Task::find($id);
+
+        return $app['twig']->render('view_task.twig', array('category_array' => $new_task->))
+    });
+
     return $app;
 ?>
