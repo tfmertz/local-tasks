@@ -59,6 +59,20 @@
             $this->assertEquals($test_task, $result[0]);
         }
 
+        function test_delete()
+        {
+            //arrange
+            $test_task = new Task("Wash the dog");
+            $test_task->save();
+
+            //act
+            $test_task->delete();
+            $result = Task::getAll();
+
+            //assert
+            $this->assertEquals([], $result);
+        }
+
         function test_saveSetsId()
         {
             //arrange
@@ -116,6 +130,33 @@
 
             //Assert
             $this->assertEquals($test_task, $result);
+        }
+
+        function test_update()
+        {
+            //arrange
+            $test_task = new Task("Feed the hens");
+            $test_task->save();
+
+            //act
+            $test_task->update("Shovel the driveway");
+
+            //assert
+            $this->assertEquals("Shovel the driveway", $test_task->getDescription());
+        }
+
+        function test_updateDatabase()
+        {
+            //arrange
+            $test_task = new Task("Feed the hens");
+            $test_task->save();
+
+            //act
+            $test_task->update("Shovel the driveway");
+            $result = Task::find($test_task->getId());
+
+            //assert
+            $this->assertEquals("Shovel the driveway", $result->getDescription());
         }
 
         function test_addCategories()
