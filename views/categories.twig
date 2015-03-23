@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>To Do List</title>
+  </head>
+  <body>
+    <h1>Categories</h1>
+
+    {% if category_array is not empty %}
+
+      <p>
+        Here are all of your categories:
+      </p>
+      <ul>
+        {% for category in category_array %}
+          <li><a href="/categories/{id}">{{ category.getName() }}</a></li>
+        {% endfor %}
+      </ul>
+
+    {% endif %}
+
+    <form action="/categories" method="post">
+      <label for="name">Category Name</label>
+      <input type="text" name="name" id="name">
+
+      <button type="submit">Add Category</button>
+    </form>
+
+    <form class="" action="/delete_categories" method="post">
+
+      <button type="submit">Clear all</button>
+    </form>
+
+    <p>
+      <a href="/">Home</a>
+    </p>
+
+  </body>
+</html>
