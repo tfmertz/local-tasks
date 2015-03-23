@@ -117,5 +117,42 @@
             //Assert
             $this->assertEquals($test_task, $result);
         }
+
+        function test_addCategories()
+        {
+            //arrange
+            $test_task = new Task("Mow the lawn");
+            $test_task->save();
+
+            $test_category = new Category("Garden");
+            $test_category->save();
+
+            //act
+            $test_task->addCategory($test_category);
+            $result = $test_task->categories();
+
+            //assert
+            $this->assertEquals([$test_category], $result);
+        }
+
+        function test_categories()
+        {
+            //arrange
+            $test_task = new Task("Mow the lawn");
+            $test_task->save();
+
+            $test_category = new Category("Garden");
+            $test_category->save();
+            $test_category2 = new Category("Home");
+            $test_category2->save();
+
+            //act
+            $test_task->addCategory($test_category);
+            $test_task->addCategory($test_category2);
+            $result = $test_task->categories();
+
+            //assert
+            $this->assertEquals([$test_category, $test_category2], $result);
+        }
     }
 ?>

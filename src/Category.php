@@ -46,7 +46,8 @@
 
         function save()
         {
-            $statement = $GLOBALS['DB']->query("INSERT INTO categories (category) VALUES ('{$this->getName()}') RETURNING id;");
+            $statement = $GLOBALS['DB']->prepare("INSERT INTO categories (category) VALUES ('{$this->getName()}') RETURNING id;");
+            $statement->execute();
             $result = $statement->fetch(PDO::FETCH_ASSOC);
             $this->setId($result['id']);
         }
@@ -64,12 +65,33 @@
 
         function addTask($new_task)
         {
-
+            $GLOBALS['DB']->exec("INSERT INTO categories_tasks (category_id, task_id) VALUES ({$this->getId()}, {$new_task->getId()});");
         }
 
         function tasks()
         {
-            
+            $query = $GLOBALS['DB']->prepare("SELECT task_id FROM categories_tasks WHERE category_id = {$this->getId()};");
+            $query->execute();
+            $task_id_array = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            $tasks = array();
+            foreach($task_id_array as $row)
+            {
+                $task_id = $row['task_id'];
+                $task_query = $GLOBALS['DB']->prepare("SELECT * FROM tasks WHERE id = {$task_id};");
+                $task_query->execute();
+                $task_query = $task_query->fetchAll(PDO::FETCH_ASSOC);
+
+                //only goes through once because we only grab one out
+                foreach($task_query as $task)
+                {
+                    $id = $task['id'];
+                    $name = $task['task'];
+                    $new_task = new Task($name, $id);
+                    array_push($tasks, $new_task);
+                }
+            }
+            return $tasks;
         }
 
         static function getAll()

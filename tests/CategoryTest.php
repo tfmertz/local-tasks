@@ -195,7 +195,28 @@
             $test_Category->addTask($test_task);
 
             //assert
-            $this->assertEquals($test_Category->tasks(), [$test_task]);
+            $this->assertEquals([$test_task], $test_Category->tasks());
+        }
+
+        function test_tasks()
+        {
+            //arrange
+            $test_Category = new Category("Garden");
+            $test_Category->save();
+
+            $test_task = new Task("Weed the beds");
+            $test_task->save();
+
+            $test_task2 = new Task("Dig out the tree");
+            $test_task2->save();
+
+            //act
+            $test_Category->addTask($test_task);
+            $test_Category->addTask($test_task2);
+            $result = $test_Category->tasks();
+
+            //assert
+            $this->assertEquals([$test_task, $test_task2], $result);
         }
     }
 

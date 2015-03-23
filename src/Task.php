@@ -37,6 +37,38 @@
             $this->setId($result['id']);
         }
 
+        function addCategory($new_category)
+        {
+            $query = $GLOBALS['DB']->prepare("INSERT INTO categories_tasks (category_id, task_id) VALUES ({$new_category->getId()}, {$this->getId()});");
+            $query->execute();
+        }
+
+        function categories()
+        {
+            $query = $GLOBALS['DB']->prepare("SELECT category_id FROM categories_tasks WHERE task_id = {$this->getId()};");
+            $query->execute();
+            $category_id_array = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            $categories = array();
+            foreach($category_id_array as $row)
+            {
+                $category_id = $row['category_id'];
+                $query = $GLOBALS['DB']->prepare("SELECT * FROM categories WHERE id = {$category_id};");
+                $query->execute();
+
+                $category_rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+                foreach($category_rows as $cat)
+                {
+                    $id = $cat['id'];
+                    $name = $cat['category'];
+                    $new_category = new Category($name, $id);
+                    array_push($categories, $new_category);
+                }
+            }
+            return $categories;
+        }
+
         static function getAll()
         {
             $returned_tasks = $GLOBALS['DB']->query("SELECT * FROM tasks;");
