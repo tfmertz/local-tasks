@@ -26,5 +26,13 @@
         return $app['twig']->render('tasks.twig', array('task_array' => Task::getAll()));
     });
 
+    $app->post("/tasks", function() use ($app) {
+
+        $new_task = new Task($_POST['description']);
+        $new_task->save();
+
+        return $app['twig']->render('tasks.twig', array('task_array' => Task::getAll()));
+    });
+
     return $app;
 ?>
